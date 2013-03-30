@@ -1,0 +1,52 @@
+﻿@using System.Web.Optimization
+@using Travellers.Web.Helpers
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>@ViewBag.Title</title>
+	@Styles.Render("~/Content/bootstrap")
+	@Styles.Render("~/Content/site")
+	<style>
+		body {
+			padding-top: 75px;
+		}
+	</style>
+</head>
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				@Html.ActionLink("TravelWeb", "Index", "Traveller", null, new { @class = "brand" })
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div id="flash" class="alert fade in" style="display: none">
+		</div>
+		<div class="row">
+			<div class="span2">
+				<ul class="nav nav-list">
+					<li class="nav-header">Travellers</li>
+					<li>@Html.ActionLink("Search", "Search", "Traveller")</li>
+					<li>@Html.ActionLink("Create", "Create", "Traveller")</li>
+					<li class="nav-header">Places</li>
+					<li>@Html.ActionLink("Search", "Search", "Place")</li>
+					<li>@Html.ActionLink("Create", "Create", "Place")</li>
+				</ul>
+			</div>
+			<div class="span10">
+				@RenderBody()
+			</div>
+		</div>
+	</div>
+	<!-- /container -->
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/bundles/jqueryval")
+	@RenderSection("scripts", false)
+	@Html.Raw(Html.Flash())
+	@Scripts.Render("~/bundles/bootstrap")
+</body>
+</html>

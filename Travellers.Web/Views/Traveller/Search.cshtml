@@ -1,0 +1,29 @@
+﻿@model Travellers.Core.ViewModels.SearchTravellerModel
+@{
+	ViewBag.Title = "Search traveller";
+}
+<h2>Search traveller</h2>
+
+@using (Html.BeginForm("Search", "Traveller", FormMethod.Post, new { @class = ".form-search" }))
+{
+	@Html.TextBoxFor(m => m.Query, new {@class = "input-medium search-query focus"})
+	<button type="submit" class="btn">Search</button>
+
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Country</th>
+			</tr>
+		</thead>
+		@foreach (var traveller in Model.Travellers)
+		{
+			<tr>
+				<td>
+					@Html.ActionLink(traveller.Firstname + " " + traveller.Lastname, "Edit", "Traveller", new {id = traveller.Id}, null)
+				</td>
+				<td>@traveller.Country</td>
+			</tr>
+		}
+	</table>
+}

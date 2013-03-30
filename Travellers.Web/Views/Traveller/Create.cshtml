@@ -1,0 +1,29 @@
+﻿@model Travellers.Core.ViewModels.TravellerModel
+
+<h2>Create traveller</h2>
+@using (Html.BeginForm("Create", "Traveller", FormMethod.Post, new { @class = "well" }))
+{
+	<div class="control-group">
+		@Html.LabelFor(m => m.Firstname)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Firstname, new { @class = "focus" })
+			@Html.ValidationMessageFor(x => x.Firstname)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(m => m.Lastname)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Lastname)
+			@Html.ValidationMessageFor(x => x.Lastname)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(m => m.Country)
+		<div class="controls">
+			@Html.DropDownListFor(m => m.Country, new SelectList(new[] { "Sweden", "Space", "Norway", "Denmark" }))
+			@Html.ValidationMessageFor(x => x.Country)
+		</div>
+	</div>
+	<button type="submit" class="btn btn-primary">
+		Create</button>
+}

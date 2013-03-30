@@ -1,0 +1,107 @@
+﻿@model Travellers.Core.ViewModels.TravellerModel
+@{
+	ViewBag.Title = "Edit traveller";
+}
+<h2>Edit traveller</h2>
+@using (Html.BeginForm("Edit", "Traveller", FormMethod.Post, new { @class = "well" }))
+{
+	<div class="control-group">
+		@Html.LabelFor(m => m.Firstname)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Firstname, new {@class = "focus"})
+			@Html.ValidationMessageFor(x => x.Firstname)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(m => m.Lastname)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Lastname)
+			@Html.ValidationMessageFor(x => x.Lastname)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(m => m.Country)
+		<div class="controls">
+			@Html.DropDownListFor(m => m.Country, new SelectList(new[] {"Sweden", "Space", "Norway", "Denmark"}))
+			@Html.ValidationMessageFor(x => x.Country)
+		</div>
+	</div>
+
+	<div class="control-group">
+		@Html.LabelFor(m => m.NumberOfVisits)
+		<div class="controls">
+			<span class="badge badge-info">@Model.NumberOfVisits</span>
+			@if (Model.NumberOfVisits > 0)
+			{
+				<span id="show-all-places" class="btn btn-mini btn-info">Show all places</span>
+				<span id="hide-all-places" class="btn btn-mini btn-info hide">Hide all places</span>
+				<div id="all-places" class="hide">
+					<table class="table table-condensed table-striped table-hover">
+						<thead>
+							<tr>
+								<th>Place
+								</th>
+								<th>Rating
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var visitedPlace in Model.VisitedPlaces)
+							{
+								<tr>
+									<td>
+										@Html.ActionLink(visitedPlace.PlaceName, "Edit", "Place", new {id = visitedPlace.PlaceId}, null)
+									</td>
+									<td>
+										@visitedPlace.Rating
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+	</div>
+
+	<div class="alert alert-info">
+		@Html.ActionLink("Visit new place...", "VisitPlace", "Traveller", new {id = Model.Id}, null)
+	</div>
+
+	<div class="control-group">
+		@Html.LabelFor(m => m.TotalPoints)
+		<div class="controls">
+			<span class="badge badge-info">@Model.TotalPoints</span>
+			@if (Model.IsReallyCool)
+			{
+				<span class="label label-success">Traveller is really cool!</span>
+			}
+			else
+			{
+				<span class="label">Traveller is not so cool yet...</span>
+			}
+		</div>
+	</div>
+
+	<button type="submit" class="btn btn-primary">
+		Save</button>
+}
+
+@section scripts
+{
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$("#show-all-places").on("click", function () {
+				$("#show-all-places").hide();
+				$("#hide-all-places").show();
+				$("#all-places").slideDown("fast");
+			});
+
+			$("#hide-all-places").on("click", function () {
+				$("#show-all-places").show();
+				$("#hide-all-places").hide();
+				$("#all-places").slideUp("fast");
+			});
+		});
+	</script>
+}

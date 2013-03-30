@@ -1,0 +1,31 @@
+﻿@model Travellers.Core.ViewModels.PlaceModel
+@{
+	ViewBag.Title = "Create place";
+}
+<h2>Create place</h2>
+@using (Html.BeginForm("Create", "Place", FormMethod.Post, new { @class = "well" }))
+{
+	<div class="control-group">
+		@Html.LabelFor(m => m.Name)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Name, new { @class = "focus" })
+			@Html.ValidationMessageFor(x => x.Name)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(m => m.Description)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Description, new { @class = "input-large" })
+			@Html.ValidationMessageFor(x => x.Description)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(m => m.Points)
+		<div class="controls">
+			@Html.TextBoxFor(x => x.Points)
+			@Html.ValidationMessageFor(x => x.Points)
+		</div>
+	</div>
+	<button type="submit" class="btn btn-primary">
+		Create</button>
+}

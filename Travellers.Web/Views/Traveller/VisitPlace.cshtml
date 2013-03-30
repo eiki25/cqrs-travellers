@@ -1,0 +1,20 @@
+﻿@model Travellers.Core.ViewModels.VisitPlaceModel
+@{
+	ViewBag.Title = "Visit place";
+}
+<h2>Visit a place</h2>
+@using (Html.BeginForm("VisitPlace", "Traveller", FormMethod.Post, new { @class = "well form-inline" }))
+{
+	@Html.HiddenFor(m => m.TravellerId)
+
+	<span>@Model.TravellerName wants to visit:</span>
+
+	@Html.DropDownListFor(m => m.SelectedPlaceId, new SelectList(Model.Places, "Id", "Name"))
+
+	<span>, and give it the rating:</span>
+
+	@Html.DropDownListFor(m => m.Rating, new SelectList(new[] { "", "1", "2", "3", "4", "5" }), new { @class = "input-mini" })
+
+	<button type="submit" class="btn btn-primary">
+		Go for it</button>
+}

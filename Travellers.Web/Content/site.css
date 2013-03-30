@@ -1,0 +1,19 @@
+﻿body,
+input,
+button,
+select,
+textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.navbar .navbar-search .search-query {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.table {
+	margin-top: 20px;
+}
+
+.alert-info a {
+  color: #ece9d7;
+}
