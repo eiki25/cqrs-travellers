@@ -46,6 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandDispatcher\CommandDispatcher.cs" />
+    <Compile Include="CommandHandlers\ChangePlaceDescriptionHandler.cs" />
+    <Compile Include="CommandHandlers\ChangePlaceNameHandler.cs" />
+    <Compile Include="CommandHandlers\ChangePlacePointsHandler.cs" />
+    <Compile Include="CommandHandlers\ChangeTravellerCountryHandler.cs" />
+    <Compile Include="CommandHandlers\ChangeTravellerNameHandler.cs" />
+    <Compile Include="CommandHandlers\CreatePlaceHandler.cs" />
+    <Compile Include="CommandHandlers\CreateTravellerHandler.cs" />
+    <Compile Include="CommandHandlers\VisitPlaceHandler.cs" />
+    <Compile Include="IResolver.cs" />
     <Compile Include="Persistence\IPersistenceManager.cs" />
     <Compile Include="Persistence\PersistenceManager.cs" />
     <Compile Include="Repositories\DbContextPlaceRepository.cs" />

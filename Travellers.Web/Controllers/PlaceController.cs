@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Travellers.Core.Commands;
 using Travellers.Core.Entities;
 using Travellers.Core.Repositories;
 using Travellers.Core.ViewModels;
@@ -12,10 +13,12 @@ namespace Travellers.Web.Controllers
 {
 	public class PlaceController : Controller
 	{
+		private readonly ICommandDispatcher _commandDispatcher;
 		private readonly IRepository<Place> _placeRepository;
 
-		public PlaceController(IRepository<Place> placeRepository)
+		public PlaceController(ICommandDispatcher commandDispatcher, IRepository<Place> placeRepository)
 		{
+			_commandDispatcher = commandDispatcher;
 			_placeRepository = placeRepository;
 		}
 
@@ -76,9 +79,9 @@ namespace Travellers.Web.Controllers
 				return new HttpNotFoundResult(string.Format("Place with id {0} not found.", model.Id));
 			}
 
-			place.Name = model.Name;
-			place.Description = model.Description;
-			place.Points = model.Points;
+			_commandDispatcher.Send(new ChangePlaceName(model.Id, model.Name));
+			_commandDispatcher.Send(new ChangePlaceDescription(model.Id, model.Description));
+			_commandDispatcher.Send(new ChangePlacePoints(model.Id, model.Points));
 
 			this.FlashSuccess(string.Format("Place '{0}' updated", model.Name));
 
@@ -100,19 +103,12 @@ namespace Travellers.Web.Controllers
 				return View(model);
 			}
 
-			var place = new Place
-				            {
-					            Id = Guid.NewGuid(),
-					            Name = model.Name,
-					            Description = model.Description,
-					            Points = model.Points
-				            };
-
-			_placeRepository.Add(place);
+			var command = new CreatePlace(Guid.NewGuid(), model.Name, model.Description, model.Points);
+			_commandDispatcher.Send(command);
 
 			this.FlashSuccess(string.Format("Place '{0}' created", model.Name));
 
-			return RedirectToAction("Edit", new { id = place.Id });
+			return RedirectToAction("Edit", new { id = command.PlaceId });
 		}
 	}
 }

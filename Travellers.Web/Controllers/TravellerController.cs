@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Travellers.Core.Commands;
 using Travellers.Core.Entities;
 using Travellers.Core.Repositories;
 using Travellers.Core.ViewModels;
@@ -12,11 +12,13 @@ namespace Travellers.Web.Controllers
 {
 	public class TravellerController : Controller
 	{
+		private readonly ICommandDispatcher _commandDispatcher;
 		private readonly IRepository<Traveller> _travellerRepository;
 		private readonly IRepository<Place> _placeRepository;
 
-		public TravellerController(IRepository<Traveller> travellerRepository, IRepository<Place> placeRepository)
+		public TravellerController(ICommandDispatcher commandDispatcher, IRepository<Traveller> travellerRepository, IRepository<Place> placeRepository)
 		{
+			_commandDispatcher = commandDispatcher;
 			_travellerRepository = travellerRepository;
 			_placeRepository = placeRepository;
 		}
@@ -92,9 +94,8 @@ namespace Travellers.Web.Controllers
 				return new HttpNotFoundResult(string.Format("Traveller with id {0} not found.", model.Id));
 			}
 
-			traveller.Firstname = model.Firstname;
-			traveller.Lastname = model.Lastname;
-			traveller.Country = model.Country;
+			_commandDispatcher.Send(new ChangeTravellerName(model.Id, model.Firstname, model.Lastname));
+			_commandDispatcher.Send(new ChangeTravellerCountry(model.Id, model.Country));
 
 			this.FlashSuccess(string.Format("Traveller '{0} {1}' updated", model.Firstname, model.Lastname));
 
@@ -116,19 +117,12 @@ namespace Travellers.Web.Controllers
 				return View(model);
 			}
 
-			var traveller = new Traveller
-				                {
-					                Id = Guid.NewGuid(),
-					                Firstname = model.Firstname,
-					                Lastname = model.Lastname,
-					                Country = model.Country
-				                };
-
-			_travellerRepository.Add(traveller);
+			var command = new CreateTraveller(Guid.NewGuid(), model.Firstname, model.Lastname, model.Country);
+			_commandDispatcher.Send(command);
 
 			this.FlashSuccess(string.Format("Traveller '{0} {1}' created", model.Firstname, model.Lastname));
 
-			return RedirectToAction("Edit", new { id = traveller.Id });
+			return RedirectToAction("Edit", new { id = command.TravellerId });
 		}
 
 		[HttpGet]
@@ -168,16 +162,10 @@ namespace Travellers.Web.Controllers
 			}
 
 			var traveller = _travellerRepository.ById(model.TravellerId);
-			var place = _placeRepository.ById(model.SelectedPlaceId);
-			var visitNumber = traveller.Visits.Any() ? traveller.Visits.Max(x => x.VisitNumber) + 1 : 1;
+			var selectedPlace = _placeRepository.ById(model.SelectedPlaceId);
+			_commandDispatcher.Send(new VisitPlace(model.TravellerId, selectedPlace.Id, selectedPlace.Points, model.Rating));
 
-			traveller.Visits.Add(new Visit { Place = place, Traveller = traveller, VisitNumber = visitNumber, Rating = model.Rating });
-
-			traveller.NumberOfVisits++;
-			traveller.TotalPoints += place.Points;
-			traveller.IsReallyCool = (traveller.TotalPoints > 1000 || traveller.NumberOfVisits > 15);
-
-			this.FlashSuccess(string.Format("Traveller '{0} {1}' visited '{2}'", traveller.Firstname, traveller.Lastname, place.Name));
+			this.FlashSuccess(string.Format("Traveller '{0} {1}' visited '{2}'", traveller.Firstname, traveller.Lastname, selectedPlace.Name));
 
 			return RedirectToAction("Edit", new { id = traveller.Id });
 		}

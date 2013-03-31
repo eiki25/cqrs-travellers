@@ -40,6 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ChangePlaceDescription.cs" />
+    <Compile Include="Commands\ChangePlaceName.cs" />
+    <Compile Include="Commands\ChangePlacePoints.cs" />
+    <Compile Include="Commands\ChangeTravellerCountry.cs" />
+    <Compile Include="Commands\ChangeTravellerName.cs" />
+    <Compile Include="Commands\CreatePlace.cs" />
+    <Compile Include="Commands\CreateTraveller.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ICommandDispatcher.cs" />
+    <Compile Include="Commands\ICommandHandler.cs" />
+    <Compile Include="Commands\VisitPlace.cs" />
     <Compile Include="Entities\Place.cs" />
     <Compile Include="Entities\Traveller.cs" />
     <Compile Include="Entities\Visit.cs" />

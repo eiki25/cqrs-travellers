@@ -4,9 +4,12 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
+using Travellers.Core.Commands;
 using Travellers.Core.Entities;
 using Travellers.Core.Repositories;
 using Travellers.Infrastructure;
+using Travellers.Infrastructure.CommandDispatcher;
+using Travellers.Infrastructure.CommandHandlers;
 using Travellers.Infrastructure.Persistence;
 using Travellers.Infrastructure.Repositories;
 
@@ -38,6 +41,15 @@ namespace Travellers.Web
 
 			builder.RegisterType<DbContextTravellerRepository>().As<IRepository<Traveller>>();
 			builder.RegisterType<DbContextPlaceRepository>().As<IRepository<Place>>();
+
+			// Command handlers
+			builder.RegisterAssemblyTypes(typeof(CreateTravellerHandler).Assembly)
+				.InNamespaceOf<CreateTravellerHandler>()
+				.AsImplementedInterfaces();
+
+			builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>();
+
+			builder.RegisterType<MvcResolver>().As<IResolver>();
 
 			var container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
