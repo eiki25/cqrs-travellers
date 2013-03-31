@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
+using Raven.Client;
+using Raven.Client.Document;
 using Travellers.Core.Commands;
 using Travellers.Core.Queries;
 using Travellers.Infrastructure;
@@ -13,6 +15,7 @@ using Travellers.Infrastructure.Persistence;
 using Travellers.Infrastructure.QueryHandlers;
 using Travellers.Infrastructure.QueryService;
 using Travellers.Infrastructure.Repositories;
+using Travellers.Infrastructure.ViewModelBuilders;
 
 namespace Travellers.Web
 {
@@ -20,8 +23,11 @@ namespace Travellers.Web
 	// visit http://go.microsoft.com/?LinkId=9394801
 	public class MvcApplication : System.Web.HttpApplication
 	{
+		private static DocumentStore _documentStore;
+
 		protected void Application_Start()
 		{
+			ConfigureRavenDB();
 			ConfigureContainer();
 
 			AreaRegistration.RegisterAllAreas();
@@ -31,6 +37,12 @@ namespace Travellers.Web
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 		}
 
+		private void ConfigureRavenDB()
+		{
+			_documentStore = new DocumentStore { ConnectionStringName = "RavenDB" };
+			_documentStore.Initialize();
+		}
+
 		private void ConfigureContainer()
 		{
 			var builder = new ContainerBuilder();
@@ -38,6 +50,7 @@ namespace Travellers.Web
 			builder.RegisterFilterProvider();
 
 			builder.RegisterType<TravellersDbContext>().As<DbContext>().InstancePerHttpRequest();
+			builder.Register(c => _documentStore.OpenSession()).As<IDocumentSession>().InstancePerHttpRequest();
 			builder.RegisterType<PersistenceManager>().As<IPersistenceManager>().InstancePerHttpRequest();
 
 			builder.RegisterGeneric(typeof(DbContextRepository<>)).AsImplementedInterfaces();
@@ -50,6 +63,11 @@ namespace Travellers.Web
 			// Query handlers
 			builder.RegisterAssemblyTypes(typeof(TravellerByIdHandler).Assembly)
 				.InNamespaceOf<TravellerByIdHandler>()
+				.AsImplementedInterfaces();
+
+			// Viewmodel builders
+			builder.RegisterAssemblyTypes(typeof(CreateTravellerBuilder).Assembly)
+				.InNamespaceOf<CreateTravellerBuilder>()
 				.AsImplementedInterfaces();
 
 			builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>();

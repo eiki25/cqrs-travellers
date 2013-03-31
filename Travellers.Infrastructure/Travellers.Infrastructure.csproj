@@ -45,10 +45,18 @@
     <Reference Include="Simple.Data.SqlServer">
       <HintPath>..\packages\Simple.Data.SqlServer.0.18.3.1\lib\net40\Simple.Data.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Raven.Abstractions">
+      <HintPath>..\packages\RavenDB.Client.2.0.2330\lib\net40\Raven.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight">
+      <HintPath>..\packages\RavenDB.Client.2.0.2330\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,6 +85,15 @@
     <Compile Include="Repositories\DbContextRepository.cs" />
     <Compile Include="TravellersDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModelBuilders\ChangePlaceDescriptionBuilder.cs" />
+    <Compile Include="ViewModelBuilders\ChangePlaceNameBuilder.cs" />
+    <Compile Include="ViewModelBuilders\ChangePlacePointsBuilder.cs" />
+    <Compile Include="ViewModelBuilders\ChangeTravellerCountryBuilder.cs" />
+    <Compile Include="ViewModelBuilders\ChangeTravellerNameBuilder.cs" />
+    <Compile Include="ViewModelBuilders\CreatePlaceBuilder.cs" />
+    <Compile Include="ViewModelBuilders\CreateTravellerBuilder.cs" />
+    <Compile Include="ViewModelBuilders\IViewModelBuilder.cs" />
+    <Compile Include="ViewModelBuilders\VisitPlaceBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Travellers.Core\Travellers.Core.csproj">
