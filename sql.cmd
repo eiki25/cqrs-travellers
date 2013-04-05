@@ -1,0 +1,1 @@
+sqlcmd -S .\SQLEXPRESS -d TravellersDB -E -i %1

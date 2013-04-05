@@ -32,14 +32,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions">
       <HintPath>..\packages\RavenDB.Client.2.0.2330\lib\net40\Raven.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Client.Lightweight">
       <HintPath>..\packages\RavenDB.Client.2.0.2330\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+    </Reference>
+    <Reference Include="Simple.Data">
+      <HintPath>..\packages\Simple.Data.Core.0.18.3.1\lib\net40\Simple.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -63,27 +66,32 @@
     <Compile Include="CommandHandlers\CreatePlaceHandler.cs" />
     <Compile Include="CommandHandlers\CreateTravellerHandler.cs" />
     <Compile Include="CommandHandlers\VisitPlaceHandler.cs" />
+    <Compile Include="EventHandlers\PlaceCreatedHandler.cs" />
+    <Compile Include="EventHandlers\PlaceDescriptionChangedHandler.cs" />
+    <Compile Include="EventHandlers\PlaceNameChangedHandler.cs" />
+    <Compile Include="EventHandlers\PlacePointsChangedHandler.cs" />
+    <Compile Include="EventHandlers\TravellerCountryChangedHandler.cs" />
+    <Compile Include="EventHandlers\TravellerCreatedHandler.cs" />
+    <Compile Include="EventHandlers\TravellerGotReallyCoolHandler.cs" />
+    <Compile Include="EventHandlers\TravellerNameChangedHandler.cs" />
+    <Compile Include="EventHandlers\TravellerVisitedPlaceHandler.cs" />
+    <Compile Include="EventPublisher\EventPublisher.cs" />
+    <Compile Include="EventStore\ConcurrencyException.cs" />
+    <Compile Include="EventStore\EventStoreContext.cs" />
+    <Compile Include="EventStore\IEventSerializer.cs" />
+    <Compile Include="EventStore\IEventStoreContext.cs" />
+    <Compile Include="EventStore\JsonEventSerializer.cs" />
+    <Compile Include="EventStore\SqlEventStore.cs" />
+    <Compile Include="IContext.cs" />
     <Compile Include="IResolver.cs" />
-    <Compile Include="Persistence\IPersistenceManager.cs" />
-    <Compile Include="Persistence\PersistenceManager.cs" />
     <Compile Include="QueryHandlers\PlaceByIdHandler.cs" />
     <Compile Include="QueryHandlers\PlacesBySearchHandler.cs" />
     <Compile Include="QueryHandlers\TravellerByIdHandler.cs" />
     <Compile Include="QueryHandlers\TravellersBySearchHandler.cs" />
     <Compile Include="QueryHandlers\VisitPlaceByTravellerIdHandler.cs" />
     <Compile Include="QueryService\QueryService.cs" />
-    <Compile Include="Repositories\DbContextRepository.cs" />
-    <Compile Include="TravellersDbContext.cs" />
+    <Compile Include="Repositories\EventSourcedRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModelBuilders\ChangePlaceDescriptionBuilder.cs" />
-    <Compile Include="ViewModelBuilders\ChangePlaceNameBuilder.cs" />
-    <Compile Include="ViewModelBuilders\ChangePlacePointsBuilder.cs" />
-    <Compile Include="ViewModelBuilders\ChangeTravellerCountryBuilder.cs" />
-    <Compile Include="ViewModelBuilders\ChangeTravellerNameBuilder.cs" />
-    <Compile Include="ViewModelBuilders\CreatePlaceBuilder.cs" />
-    <Compile Include="ViewModelBuilders\CreateTravellerBuilder.cs" />
-    <Compile Include="ViewModelBuilders\IViewModelBuilder.cs" />
-    <Compile Include="ViewModelBuilders\VisitPlaceBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Travellers.Core\Travellers.Core.csproj">
@@ -92,7 +100,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

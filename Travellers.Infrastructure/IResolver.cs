@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Travellers.Infrastructure
 {
@@ -6,5 +7,6 @@ namespace Travellers.Infrastructure
 	{
 		T Resolve<T>();
 		object Resolve(Type type);
+		IEnumerable<object> ResolveAll(Type type);
 	}
 }

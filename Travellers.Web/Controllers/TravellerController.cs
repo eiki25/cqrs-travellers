@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using Travellers.Core.Commands;
 using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
-using Travellers.Web.ActionFilters;
 using Travellers.Web.Helpers;
 
 namespace Travellers.Web.Controllers
@@ -50,7 +49,6 @@ namespace Travellers.Web.Controllers
 		}
 
 		[HttpPost]
-		[Persistence]
 		public ActionResult Edit(TravellerModel model)
 		{
 			if (!ModelState.IsValid)
@@ -73,7 +71,6 @@ namespace Travellers.Web.Controllers
 		}
 
 		[HttpPost]
-		[Persistence]
 		public ActionResult Create(TravellerModel model)
 		{
 			if (!ModelState.IsValid)
@@ -103,7 +100,6 @@ namespace Travellers.Web.Controllers
 		}
 
 		[HttpPost]
-		[Persistence]
 		public ActionResult VisitPlace(VisitPlaceModel model)
 		{
 			if (!ModelState.IsValid)

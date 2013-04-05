@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using Travellers.Core.Commands;
 using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
-using Travellers.Web.ActionFilters;
 using Travellers.Web.Helpers;
 
 namespace Travellers.Web.Controllers
@@ -45,7 +44,6 @@ namespace Travellers.Web.Controllers
 		}
 
 		[HttpPost]
-		[Persistence]
 		public ActionResult Edit(PlaceModel model)
 		{
 			if (!ModelState.IsValid)
@@ -69,7 +67,6 @@ namespace Travellers.Web.Controllers
 		}
 
 		[HttpPost]
-		[Persistence]
 		public ActionResult Create(PlaceModel model)
 		{
 			if (!ModelState.IsValid)

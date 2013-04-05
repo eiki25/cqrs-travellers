@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Web.Http;
+﻿﻿using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
@@ -7,15 +6,17 @@ using Autofac.Integration.Mvc;
 using Raven.Client;
 using Raven.Client.Document;
 using Travellers.Core.Commands;
+using Travellers.Core.Events;
 using Travellers.Core.Queries;
 using Travellers.Infrastructure;
 using Travellers.Infrastructure.CommandDispatcher;
 using Travellers.Infrastructure.CommandHandlers;
-using Travellers.Infrastructure.Persistence;
+using Travellers.Infrastructure.EventHandlers;
+using Travellers.Infrastructure.EventPublisher;
+using Travellers.Infrastructure.EventStore;
 using Travellers.Infrastructure.QueryHandlers;
 using Travellers.Infrastructure.QueryService;
 using Travellers.Infrastructure.Repositories;
-using Travellers.Infrastructure.ViewModelBuilders;
 
 namespace Travellers.Web
 {
@@ -47,13 +48,13 @@ namespace Travellers.Web
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterControllers(typeof(MvcApplication).Assembly);
-			builder.RegisterFilterProvider();
 
-			builder.RegisterType<TravellersDbContext>().As<DbContext>().InstancePerHttpRequest();
+			builder.RegisterType<SqlEventStore>().As<IEventStore>();
+			builder.RegisterType<JsonEventSerializer>().As<IEventSerializer>();
+			builder.RegisterType<EventStoreContext>().As<IEventStoreContext>().InstancePerHttpRequest();
 			builder.Register(c => CreateDocumentSession()).As<IDocumentSession>().InstancePerHttpRequest();
-			builder.RegisterType<PersistenceManager>().As<IPersistenceManager>().InstancePerHttpRequest();
 
-			builder.RegisterGeneric(typeof(DbContextRepository<>)).AsImplementedInterfaces();
+			builder.RegisterGeneric(typeof(EventSourcedRepository<>)).AsImplementedInterfaces();
 
 			// Command handlers
 			builder.RegisterAssemblyTypes(typeof(CreateTravellerHandler).Assembly)
@@ -65,15 +66,17 @@ namespace Travellers.Web
 				.InNamespaceOf<TravellerByIdHandler>()
 				.AsImplementedInterfaces();
 
-			// Viewmodel builders
-			builder.RegisterAssemblyTypes(typeof(CreateTravellerBuilder).Assembly)
-				.InNamespaceOf<CreateTravellerBuilder>()
+			// Event handlers (previously ViewModelBuilders)
+			builder.RegisterAssemblyTypes(typeof(TravellerCreatedHandler).Assembly)
+				.InNamespaceOf<TravellerCreatedHandler>()
 				.AsImplementedInterfaces();
 
 			builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>();
 			builder.RegisterType<QueryService>().As<IQueryService>();
+			builder.RegisterType<EventPublisher>().As<IEventPublisher>();
 
 			builder.RegisterType<MvcResolver>().As<IResolver>();
+			builder.RegisterType<MvcContext>().As<IContext>().InstancePerHttpRequest();
 
 			var container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
