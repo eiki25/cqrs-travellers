@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travellers.Core", "Travelle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travellers.Infrastructure", "Travellers.Infrastructure\Travellers.Infrastructure.csproj", "{13CA82E7-DF0B-483C-869A-D8E5CB28D794}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travellers.EventReplayer", "Travellers.EventReplayer\Travellers.EventReplayer.csproj", "{A046D543-3A0B-41D2-832F-9E073BF31184}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{13CA82E7-DF0B-483C-869A-D8E5CB28D794}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13CA82E7-DF0B-483C-869A-D8E5CB28D794}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13CA82E7-DF0B-483C-869A-D8E5CB28D794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A046D543-3A0B-41D2-832F-9E073BF31184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A046D543-3A0B-41D2-832F-9E073BF31184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A046D543-3A0B-41D2-832F-9E073BF31184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A046D543-3A0B-41D2-832F-9E073BF31184}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
