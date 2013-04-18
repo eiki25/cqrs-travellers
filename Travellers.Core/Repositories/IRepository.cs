@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Travellers.Core.Repositories
 {
@@ -7,7 +6,5 @@ namespace Travellers.Core.Repositories
 	{
 		void Add(T item);
 		T ById(Guid id);
-		IEnumerable<T> All();
-		IEnumerable<T> Search(string query);
 	}
 }

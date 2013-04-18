@@ -5,12 +5,13 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Travellers.Core.Commands;
-using Travellers.Core.Entities;
-using Travellers.Core.Repositories;
+using Travellers.Core.Queries;
 using Travellers.Infrastructure;
 using Travellers.Infrastructure.CommandDispatcher;
 using Travellers.Infrastructure.CommandHandlers;
 using Travellers.Infrastructure.Persistence;
+using Travellers.Infrastructure.QueryHandlers;
+using Travellers.Infrastructure.QueryService;
 using Travellers.Infrastructure.Repositories;
 
 namespace Travellers.Web
@@ -39,15 +40,20 @@ namespace Travellers.Web
 			builder.RegisterType<TravellersDbContext>().As<DbContext>().InstancePerHttpRequest();
 			builder.RegisterType<PersistenceManager>().As<IPersistenceManager>().InstancePerHttpRequest();
 
-			builder.RegisterType<DbContextTravellerRepository>().As<IRepository<Traveller>>();
-			builder.RegisterType<DbContextPlaceRepository>().As<IRepository<Place>>();
+			builder.RegisterGeneric(typeof(DbContextRepository<>)).AsImplementedInterfaces();
 
 			// Command handlers
 			builder.RegisterAssemblyTypes(typeof(CreateTravellerHandler).Assembly)
 				.InNamespaceOf<CreateTravellerHandler>()
 				.AsImplementedInterfaces();
 
+			// Query handlers
+			builder.RegisterAssemblyTypes(typeof(TravellerByIdHandler).Assembly)
+				.InNamespaceOf<TravellerByIdHandler>()
+				.AsImplementedInterfaces();
+
 			builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>();
+			builder.RegisterType<QueryService>().As<IQueryService>();
 
 			builder.RegisterType<MvcResolver>().As<IResolver>();
 

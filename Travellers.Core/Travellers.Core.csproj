@@ -55,6 +55,14 @@
     <Compile Include="Entities\Traveller.cs" />
     <Compile Include="Entities\Visit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\IQuery.cs" />
+    <Compile Include="Queries\IQueryHandler.cs" />
+    <Compile Include="Queries\IQueryService.cs" />
+    <Compile Include="Queries\PlaceById.cs" />
+    <Compile Include="Queries\PlacesBySearch.cs" />
+    <Compile Include="Queries\TravellerById.cs" />
+    <Compile Include="Queries\TravellersBySearch.cs" />
+    <Compile Include="Queries\VisitPlaceByTravellerId.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="ViewModels\PlaceModel.cs" />
     <Compile Include="ViewModels\SearchPlaceModel.cs" />

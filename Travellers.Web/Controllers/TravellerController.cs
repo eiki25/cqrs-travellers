@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Web.Mvc;
 using Travellers.Core.Commands;
-using Travellers.Core.Entities;
-using Travellers.Core.Repositories;
+using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
 using Travellers.Web.ActionFilters;
 using Travellers.Web.Helpers;
@@ -13,14 +11,12 @@ namespace Travellers.Web.Controllers
 	public class TravellerController : Controller
 	{
 		private readonly ICommandDispatcher _commandDispatcher;
-		private readonly IRepository<Traveller> _travellerRepository;
-		private readonly IRepository<Place> _placeRepository;
+		private readonly IQueryService _queryService;
 
-		public TravellerController(ICommandDispatcher commandDispatcher, IRepository<Traveller> travellerRepository, IRepository<Place> placeRepository)
+		public TravellerController(ICommandDispatcher commandDispatcher, IQueryService queryService)
 		{
 			_commandDispatcher = commandDispatcher;
-			_travellerRepository = travellerRepository;
-			_placeRepository = placeRepository;
+			_queryService = queryService;
 		}
 
 		public ActionResult Index()
@@ -30,16 +26,8 @@ namespace Travellers.Web.Controllers
 
 		public ActionResult Search(string query = null)
 		{
-			var searchResult = _travellerRepository.Search(query)
-				.Select(x => new TravellerModel
-					             {
-						             Id = x.Id,
-						             Firstname = x.Firstname,
-						             Lastname = x.Lastname,
-						             Country = x.Country
-					             });
-
-			return View(new SearchTravellerModel { Query = query, Travellers = searchResult });
+			var model = _queryService.ExecuteQuery(new TravellersBySearch { SearchString = query });
+			return View(model);
 		}
 
 		[HttpPost, ActionName("Search")]
@@ -51,29 +39,12 @@ namespace Travellers.Web.Controllers
 		[HttpGet]
 		public ActionResult Edit(Guid id)
 		{
-			var traveller = _travellerRepository.ById(id);
+			var model = _queryService.ExecuteQuery(new TravellerById { Id = id });
 
-			if (traveller == null)
+			if (model == null)
 			{
 				return new HttpNotFoundResult(string.Format("Traveller with id {0} not found.", id));
 			}
-
-			var model = new TravellerModel
-				            {
-					            Id = traveller.Id,
-					            Firstname = traveller.Firstname,
-					            Lastname = traveller.Lastname,
-					            Country = traveller.Country,
-					            IsReallyCool = traveller.IsReallyCool,
-					            NumberOfVisits = traveller.NumberOfVisits,
-					            TotalPoints = traveller.TotalPoints,
-					            VisitedPlaces = traveller.Visits.Select(v => new VisitModel
-						                                                         {
-							                                                         PlaceId = v.PlaceId,
-							                                                         PlaceName = v.Place.Name,
-							                                                         Rating = v.Rating
-						                                                         })
-				            };
 
 			return View(model);
 		}
@@ -85,13 +56,6 @@ namespace Travellers.Web.Controllers
 			if (!ModelState.IsValid)
 			{
 				return View(model);
-			}
-
-			var traveller = _travellerRepository.ById(model.Id);
-
-			if (traveller == null)
-			{
-				return new HttpNotFoundResult(string.Format("Traveller with id {0} not found.", model.Id));
 			}
 
 			_commandDispatcher.Send(new ChangeTravellerName(model.Id, model.Firstname, model.Lastname));
@@ -128,26 +92,12 @@ namespace Travellers.Web.Controllers
 		[HttpGet]
 		public ActionResult VisitPlace(Guid id)
 		{
-			var traveller = _travellerRepository.ById(id);
+			var model = _queryService.ExecuteQuery(new VisitPlaceByTravellerId { TravellerId = id });
 
-			if (traveller == null)
+			if (model == null)
 			{
 				return HttpNotFound("Traveller could not be found.");
 			}
-
-			var model = new VisitPlaceModel
-				            {
-					            TravellerId = id,
-					            TravellerName = traveller.Firstname + " " + traveller.Lastname,
-					            Places = _placeRepository.All()
-						            .Select(x => new PlaceModel
-							                         {
-								                         Id = x.Id,
-								                         Name = x.Name,
-								                         Description = x.Description,
-								                         Points = x.Points
-							                         })
-				            };
 
 			return View(model);
 		}
@@ -161,13 +111,13 @@ namespace Travellers.Web.Controllers
 				return View(model);
 			}
 
-			var traveller = _travellerRepository.ById(model.TravellerId);
-			var selectedPlace = _placeRepository.ById(model.SelectedPlaceId);
+			var selectedPlace = _queryService.ExecuteQuery(new PlaceById { Id = model.SelectedPlaceId });
+
 			_commandDispatcher.Send(new VisitPlace(model.TravellerId, selectedPlace.Id, selectedPlace.Points, model.Rating));
 
-			this.FlashSuccess(string.Format("Traveller '{0} {1}' visited '{2}'", traveller.Firstname, traveller.Lastname, selectedPlace.Name));
+			this.FlashSuccess(string.Format("Traveller '{0}' visited '{1}'", model.TravellerName, selectedPlace.Name));
 
-			return RedirectToAction("Edit", new { id = traveller.Id });
+			return RedirectToAction("Edit", new { id = model.TravellerId });
 		}
 	}
 }

@@ -6,6 +6,7 @@
 @using (Html.BeginForm("VisitPlace", "Traveller", FormMethod.Post, new { @class = "well form-inline" }))
 {
 	@Html.HiddenFor(m => m.TravellerId)
+	@Html.HiddenFor(m => m.TravellerName)
 
 	<span>@Model.TravellerName wants to visit:</span>
 

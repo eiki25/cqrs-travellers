@@ -28,7 +28,7 @@ namespace Travellers.Core.Entities
 		public int NumberOfVisits { get; protected set; }
 		public bool IsReallyCool { get; protected set; }
 
-		public virtual ICollection<Visit> Visits { get; protected set; }
+		protected virtual ICollection<Visit> Visits { get; set; }
 
 		public void ChangeName(string firstname, string lastname)
 		{

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using Travellers.Core.Commands;
-using Travellers.Core.Entities;
-using Travellers.Core.Repositories;
+using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
 using Travellers.Web.ActionFilters;
 using Travellers.Web.Helpers;
@@ -14,26 +11,18 @@ namespace Travellers.Web.Controllers
 	public class PlaceController : Controller
 	{
 		private readonly ICommandDispatcher _commandDispatcher;
-		private readonly IRepository<Place> _placeRepository;
+		private readonly IQueryService _queryService;
 
-		public PlaceController(ICommandDispatcher commandDispatcher, IRepository<Place> placeRepository)
+		public PlaceController(ICommandDispatcher commandDispatcher, IQueryService queryService)
 		{
 			_commandDispatcher = commandDispatcher;
-			_placeRepository = placeRepository;
+			_queryService = queryService;
 		}
 
 		public ActionResult Search(string query = null)
 		{
-			var searchResult = _placeRepository.Search(query)
-				.Select(x => new PlaceModel
-					             {
-						             Id = x.Id,
-						             Name = x.Name,
-						             Description = x.Description,
-						             Points = x.Points
-					             });
-
-			return View(new SearchPlaceModel { Query = query, Places = searchResult });
+			var model = _queryService.ExecuteQuery(new PlacesBySearch { SearchString = query });
+			return View(model);
 		}
 
 		[HttpPost, ActionName("Search")]
@@ -45,20 +34,12 @@ namespace Travellers.Web.Controllers
 		[HttpGet]
 		public ActionResult Edit(Guid id)
 		{
-			var place = _placeRepository.ById(id);
+			var model = _queryService.ExecuteQuery(new PlaceById { Id = id });
 
-			if (place == null)
+			if(model == null)
 			{
 				return new HttpNotFoundResult(string.Format("Place with id {0} not found.", id));
 			}
-
-			var model = new PlaceModel
-			{
-				Id = place.Id,
-				Name = place.Name,
-				Description = place.Description,
-				Points = place.Points
-			};
 
 			return View(model);
 		}
@@ -70,13 +51,6 @@ namespace Travellers.Web.Controllers
 			if (!ModelState.IsValid)
 			{
 				return View(model);
-			}
-
-			var place = _placeRepository.ById(model.Id);
-
-			if (place == null)
-			{
-				return new HttpNotFoundResult(string.Format("Place with id {0} not found.", model.Id));
 			}
 
 			_commandDispatcher.Send(new ChangePlaceName(model.Id, model.Name));
