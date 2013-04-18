@@ -50,7 +50,7 @@ namespace Travellers.Web
 			builder.RegisterFilterProvider();
 
 			builder.RegisterType<TravellersDbContext>().As<DbContext>().InstancePerHttpRequest();
-			builder.Register(c => _documentStore.OpenSession()).As<IDocumentSession>().InstancePerHttpRequest();
+			builder.Register(c => CreateDocumentSession()).As<IDocumentSession>().InstancePerHttpRequest();
 			builder.RegisterType<PersistenceManager>().As<IPersistenceManager>().InstancePerHttpRequest();
 
 			builder.RegisterGeneric(typeof(DbContextRepository<>)).AsImplementedInterfaces();
@@ -77,6 +77,13 @@ namespace Travellers.Web
 
 			var container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+		}
+
+		private static IDocumentSession CreateDocumentSession()
+		{
+			var session = _documentStore.OpenSession();
+			session.Advanced.AllowNonAuthoritativeInformation = false;
+			return session;
 		}
 	}
 }

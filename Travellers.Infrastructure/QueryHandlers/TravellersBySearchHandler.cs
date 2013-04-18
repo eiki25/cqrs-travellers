@@ -1,5 +1,6 @@
-﻿
-using Simple.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Raven.Client;
 using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
 
@@ -7,20 +8,27 @@ namespace Travellers.Infrastructure.QueryHandlers
 {
 	public class TravellersBySearchHandler : IQueryHandler<TravellersBySearch, SearchTravellerModel>
 	{
+		private readonly IDocumentSession _session;
+
+		public TravellersBySearchHandler(IDocumentSession session)
+		{
+			_session = session;
+		}
+
 		public SearchTravellerModel Execute(TravellersBySearch query)
 		{
-			var db = Database.Open();
+			var travellers = _session.Query<TravellerModel>()
+				.Customize(x => x.WaitForNonStaleResults())
+				.Where(x =>
+				       x.Firstname.StartsWith(query.SearchString) ||
+				       x.Lastname.StartsWith(query.SearchString) ||
+				       x.Country.StartsWith(query.SearchString)
+				);
 
 			return new SearchTravellerModel
 				       {
 					       Query = query.SearchString,
-					       Travellers = string.IsNullOrWhiteSpace(query.SearchString)
-						                    ? db.Travellers.All().Cast<TravellerModel>()
-						                    : db.Travellers.FindAll(
-							                    db.Travellers.Firstname.Like("%" + query.SearchString + "%") ||
-							                    db.Travellers.Lastname.Like("%" + query.SearchString + "%") ||
-							                    db.Travellers.Country.Like("%" + query.SearchString + "%")
-							                      ).Cast<TravellerModel>()
+					       Travellers = travellers.ToList()
 				       };
 		}
 	}

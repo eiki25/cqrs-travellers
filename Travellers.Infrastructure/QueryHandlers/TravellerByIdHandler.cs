@@ -1,4 +1,4 @@
-﻿using Simple.Data;
+﻿using Raven.Client;
 using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
 
@@ -6,22 +6,16 @@ namespace Travellers.Infrastructure.QueryHandlers
 {
 	public class TravellerByIdHandler : IQueryHandler<TravellerById, TravellerModel>
 	{
+		private readonly IDocumentSession _session;
+
+		public TravellerByIdHandler(IDocumentSession session)
+		{
+			_session = session;
+		}
+
 		public TravellerModel Execute(TravellerById query)
 		{
-			var db = Database.Open();
-
-			TravellerModel model = db.Travellers.Get(query.Id);
-
-			if (model != null)
-			{
-				model.VisitedPlaces = db.Visits
-					.FindAllByTravellerId(query.Id).Select(
-						db.Visits.PlaceId,
-						db.Visits.Places.Name.As("PlaceName"),
-						db.Visits.Rating).Cast<VisitModel>();
-			}
-
-			return model;
+			return _session.Load<TravellerModel>(query.Id);
 		}
 	}
 }

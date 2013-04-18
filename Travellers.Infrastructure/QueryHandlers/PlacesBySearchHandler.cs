@@ -1,4 +1,5 @@
-﻿using Simple.Data;
+﻿using System.Linq;
+using Raven.Client;
 using Travellers.Core.Queries;
 using Travellers.Core.ViewModels;
 
@@ -6,19 +7,25 @@ namespace Travellers.Infrastructure.QueryHandlers
 {
 	public class PlacesBySearchHandler : IQueryHandler<PlacesBySearch, SearchPlaceModel>
 	{
+		private readonly IDocumentSession _session;
+
+		public PlacesBySearchHandler(IDocumentSession session)
+		{
+			_session = session;
+		}
+
 		public SearchPlaceModel Execute(PlacesBySearch query)
 		{
-			var db = Database.Open();
+			var places = _session.Query<PlaceModel>()
+				.Customize(x => x.WaitForNonStaleResults())
+				.Where(
+					x => x.Name.StartsWith(query.SearchString) ||
+					     x.Description.StartsWith(query.SearchString));
 
 			return new SearchPlaceModel
 					   {
 						   Query = query.SearchString,
-						   Places = string.IsNullOrWhiteSpace(query.SearchString)
-										? db.Places.All().Cast<PlaceModel>()
-										: db.Places.FindAll(
-											db.Places.Name.Like("%" + query.SearchString + "%") ||
-											db.Places.Description.Like("%" + query.SearchString + "%")
-											  ).Cast<PlaceModel>()
+						   Places = places.ToList()
 					   };
 		}
 	}
